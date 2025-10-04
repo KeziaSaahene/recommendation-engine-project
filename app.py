@@ -14,8 +14,6 @@ from tensorflow.keras.preprocessing.text import tokenizer_from_json
 model = tf.keras.models.load_model("cnn_model.h5")
 
 # Load tokenizer
-from keras.preprocessing.text import tokenizer_from_json
-
 with open("tokenizer.json", "r", encoding="utf-8") as f:
     tokenizer_data = json.load(f)
 tokenizer = tokenizer_from_json(json.dumps(tokenizer_data))
