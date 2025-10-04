@@ -14,9 +14,12 @@ from tensorflow.keras.preprocessing.text import tokenizer_from_json
 model = tf.keras.models.load_model("cnn_model.h5")
 
 # Load tokenizer
-with open("tokenizer.json") as f:
+from keras.preprocessing.text import tokenizer_from_json
+
+with open("tokenizer.json", "r", encoding="utf-8") as f:
     tokenizer_data = json.load(f)
-    tokenizer = tokenizer_from_json(tokenizer_data)
+tokenizer = tokenizer_from_json(json.dumps(tokenizer_data))
+
 
 # Load label encoder
 with open("labelencoder.pkl", "rb") as f:
