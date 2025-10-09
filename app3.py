@@ -2,6 +2,7 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 import json
+import pickle
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json
 
@@ -9,41 +10,32 @@ from tensorflow.keras.preprocessing.text import tokenizer_from_json
 # Load artifacts
 # -------------------------
 
-# Dropdown to choose model
-st.sidebar.title("⚙️ Model Settings")
-model_choice = st.sidebar.selectbox(
-    "Select Model:",
-    ["CNN Model (Task 1)", "Autoencoder CNN (Task 2)"]
-)
+# Load CNN model
+model = tf.keras.models.load_model("cnn_model.keras")
 
-# Load selected model
-if model_choice == "CNN Model (Task 1)":
-    model = tf.keras.models.load_model("cnn_model.keras")
-else:
-    model = tf.keras.models.load_model("cnn_ae.keras")
-
-# Load tokenizer
-with open("tokenizer.json", "r", encoding="utf-8") as f:
+# Load new tokenizer
+with open("tokenizer2.json", "r", encoding="utf-8") as f:
     tokenizer_data = json.load(f)
 tokenizer = tokenizer_from_json(json.dumps(tokenizer_data))
 
-# Load label encoder classes (new format)
+# Load label classes (NumPy format)
+import numpy as np
 label_classes = np.load("label_classes.npy", allow_pickle=True)
 
 # -------------------------
 # Streamlit app
 # -------------------------
 st.title("📊 Text Classification App")
-st.write("Enter text below and get predictions from your selected model!")
+st.write("Enter text and get a prediction from the CNN model!")
 
-# Input text
-user_input = st.text_area("✏️ Enter your text here:")
+# Input box for user
+user_input = st.text_area("Enter your text:")
 
 if st.button("Predict"):
     if user_input.strip():
-        # Tokenize input
+        # Convert text to sequences
         seq = tokenizer.texts_to_sequences([user_input])
-        padded = pad_sequences(seq, maxlen=100)  # match your training length
+        padded = pad_sequences(seq, maxlen=100)  # same maxlen as used during training
 
         # Make prediction
         prediction = model.predict(padded)
@@ -52,4 +44,4 @@ if st.button("Predict"):
 
         st.success(f"✅ Prediction: {result}")
     else:
-        st.warning("⚠️ Please enter some text to classify.")
+        st.warning("⚠️ Please enter some text!")
